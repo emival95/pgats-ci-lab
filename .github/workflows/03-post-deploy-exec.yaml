@@ -1,13 +1,9 @@
-# CI de Nível 03 - Disparo manual após a conclusão de im pipeline
+# CI de Nível 03 - Disparo manual após a conclusão de um pipeline
 
 # nome do nosso 'pipeline'
 name: 'Execução por Deploy'
 
 # regras de disparo (gatilhos/triggers)
-# gatilho de exec manual = workflow_dispatch
-# gatilho de exec agendada = schedule
-# gatilho de exec a parit de outro pipe = workflow_run
-
 on:
   workflow_run:
     workflows: ['Execução Manual']
@@ -17,19 +13,13 @@ on:
 # trabalhos/tarefas dentro do pipeline = jobs
 jobs:
   e2e-tests:
+    # Condicional: executa somente se o workflow anterior teve sucesso
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
-    #maquina que o jobe vai executar
-    runs-on: ubuntu-latest 
+    # máquina que o job vai usar
+    runs-on: ubuntu-latest
 
-  # condicional - if
-  # `${ expressao}`
-  # == comparaçap
-
-  if: ${{ github.event.workflow_run.conclusion == 'success' }}
-
-
-
-    # passos do script de buil
+    # passos do script de build/teste
     steps:
       # clone do projeto
       - uses: actions/checkout@v4
@@ -37,26 +27,27 @@ jobs:
       # instalação do node
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: '22.x'
 
       # instalação do yarn
       - name: Instalando yarn
         run: npm install -g yarn
 
-      # instalação das dependenscias 
+      # instalação das dependências 
       - name: Instalando dependências
         run: yarn
 
       # instalação do Playwright
       - name: Instalando Playwright
-        run: yarn playwright  install
+        run: yarn playwright install
 
-      # Executando  os teste e2e
+      # Executando os testes e2e
       - name: Executando Testes E2E
         run: yarn run e2e
 
+      # Upload do relatório
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: 
           name: relatorio
-          path: ./playwright-report  
+          path: ./playwright-report
