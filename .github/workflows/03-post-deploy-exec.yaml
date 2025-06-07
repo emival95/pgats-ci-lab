@@ -21,6 +21,14 @@ jobs:
     #maquina que o jobe vai executar
     runs-on: ubuntu-latest 
 
+  # condicional - if
+  # `${ expressao}`
+  # == comparaçap
+
+  if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+
+
     # passos do script de buil
     steps:
       # clone do projeto
