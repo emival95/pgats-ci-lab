@@ -33,7 +33,7 @@ jobs:
       - name: Instalando yarn
         run: npm install -g yarn
 
-      # instalação das dependências 
+      # instalação das dependências
       - name: Instalando dependências
         run: yarn
 
@@ -48,6 +48,6 @@ jobs:
       # Upload do relatório
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
-        with: 
+        with:
           name: relatorio
           path: ./playwright-report
